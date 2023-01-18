@@ -22,6 +22,7 @@ const Forest: FC<Props> = (props) => {
   if (trees.length === 0) {
     return <Text>Plant trees and your forest will show up here.</Text>;
   }
+  // TODO add a render more trees button
   const renderedTrees = Math.min(trees.length, 1000);
   //   return <Text>Hi</Text>
   return (
