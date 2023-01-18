@@ -8,7 +8,7 @@ const Icon = chakra(FontAwesomeIcon);
 
 interface Props {}
 
-const Tree: FC<{}> = ({}) => {
+const Tree: FC<Props> = ({}) => {
   return (
     <WrapItem>
       <Icon icon={faTree} boxSize={10} color="brand.300" />
