@@ -22,6 +22,7 @@ const Forest: FC<Props> = (props) => {
   if (trees.length === 0) {
     return <Text>Plant trees and your forest will show up here.</Text>;
   }
+  const renderedTrees = Math.min(trees.length, 1000);
   //   return <Text>Hi</Text>
   return (
     <>
@@ -29,7 +30,7 @@ const Forest: FC<Props> = (props) => {
         You&apos;ve planted {trees.length} trees so far. Great job!
       </Heading>
       <Wrap>
-        {range(trees.length).map((i) => (
+        {range(renderedTrees).map((i) => (
           <Tree key={i} />
         ))}
       </Wrap>

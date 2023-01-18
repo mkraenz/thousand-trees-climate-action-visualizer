@@ -51,7 +51,7 @@ Not necessary
   - [x] use react context API
   - [x] reintegrate with localstorage
 - [x] trees get shown on page as a table
-- [ ] deploy
+- [x] deploy
 
 Implementation:
 
