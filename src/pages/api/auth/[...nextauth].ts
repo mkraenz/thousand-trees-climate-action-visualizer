@@ -8,7 +8,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, user }) {
       if (session.user) {
-        session.user.id = user.id;
+        (session.user as unknown as { id?: string | null }).id = user.id;
       }
       return session;
     },
