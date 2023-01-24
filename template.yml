@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless patterns - Cognito User Pool
+
+Parameters:
+  CognitoAuthClientAdminEmail:
+    Type: String
+  CognitoAuthClientCallbackUrl:
+    Type: String
+  CognitoAuthClientLogoutUrl:
+    Type: String
+  Stage:
+    Type: String
+    Default: dev
+
+Resources:
+  CognitoAuthUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub ${AWS::StackName}-${Stage}-user-pool
+
+  CognitoAuthUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthFlowsUserPoolClient: True
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+      CallbackURLs:
+        - !Ref CognitoAuthClientCallbackUrl
+      LogoutURLs:
+        - !Ref CognitoAuthClientLogoutUrl
+      ClientName: !Sub ${AWS::StackName}-${Stage}-nextjs
+      GenerateSecret: True
+      PreventUserExistenceErrors: ENABLED
+      SupportedIdentityProviders:
+        - COGNITO
+      UserPoolId: !Ref CognitoAuthUserPool
+
+  CognitoAuthUserPoolUser:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      UserAttributes:
+        - Name: email
+          Value: !Ref CognitoAuthClientAdminEmail
+      Username: !Ref CognitoAuthClientAdminEmail
+      UserPoolId: !Ref CognitoAuthUserPool
+
+  CognitoAuthUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Sub ${AWS::StackName}-${Stage}-${AWS::AccountId}
+      UserPoolId: !Ref CognitoAuthUserPool
+
+Outputs:
+  CognitoAuthIssuerUrl:
+    Description: Cognito Auth Issuer URL
+    Value: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoAuthUserPool}
+
+  HostedUi:
+    Description: Hosted UI
+    Value: !Sub "https://${CognitoAuthUserPoolDomain}.auth.${AWS::Region}.amazoncognito.com/login?client_id=${CognitoAuthUserPoolClient}&response_type=code&scope=email+openid+profile&redirect_uri=${CognitoAuthClientCallbackUrl}"

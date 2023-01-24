@@ -2,6 +2,7 @@ import { Button, Text, VStack } from "@chakra-ui/react";
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import AddPlantedTrees from "../components/AddPlantedTrees";
 import Forest from "../components/Forest";
 import IndexHeader from "../components/IndexHeader";
@@ -10,8 +11,8 @@ import { api } from "../utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const { trees, addTrees } = useAppState();
-  console.log(trees);
+  const { trees } = useAppState();
+  const router = useRouter();
 
   return (
     <>
@@ -31,6 +32,7 @@ const Home: NextPage = () => {
         <IndexHeader />
         <AddPlantedTrees />
         <Forest />
+        {router.query["demo"] && <AuthShowcase />}
       </VStack>
     </>
   );
@@ -52,6 +54,7 @@ const AuthShowcase: React.FC = () => {
         {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
         {secretMessage && <span> - {secretMessage}</span>}
       </Text>
+      <pre>{JSON.stringify(sessionData, null, 2)}</pre>
       <Button
         onClick={sessionData ? () => void signOut() : () => void signIn()}
       >
