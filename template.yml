@@ -9,6 +9,10 @@ Parameters:
     Type: String
   CognitoAuthClientLogoutUrl:
     Type: String
+  CognitoAuthClientCallbackUrl2:
+    Type: String
+  CognitoAuthClientLogoutUrl2:
+    Type: String
   Stage:
     Type: String
     Default: dev
@@ -31,8 +35,10 @@ Resources:
         - profile
       CallbackURLs:
         - !Ref CognitoAuthClientCallbackUrl
+        - !Ref CognitoAuthClientCallbackUrl2
       LogoutURLs:
         - !Ref CognitoAuthClientLogoutUrl
+        - !Ref CognitoAuthClientLogoutUrl2
       ClientName: !Sub ${AWS::StackName}-${Stage}-nextjs
       GenerateSecret: True
       PreventUserExistenceErrors: ENABLED
