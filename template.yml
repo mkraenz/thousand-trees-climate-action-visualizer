@@ -38,6 +38,37 @@ Resources:
       BillingMode: PROVISIONED
 
   ####################################
+  # Nextjs access to DynamoDB
+  ####################################
+
+  NextjsToDynamoDbUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Sub ${AWS::StackName}-${Stage}-nextjs-to-dynamodb-user
+      Policies:
+        - PolicyName: !Sub ${AWS::StackName}-${Stage}-nextjs-to-dynamodb-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                Resource:
+                  # we do not use Global Secondary Indexes,
+                  # otherwise we would need something like Db.Arn/index/*
+                  - !GetAtt Db.Arn
+
+  NextjsToDynamoDbAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref NextjsToDynamoDbUser
+
+  ####################################
   # Authentication
   ####################################
   CognitoAuthUserPool:
@@ -101,3 +132,11 @@ Outputs:
   HostedUi:
     Description: Hosted UI
     Value: !Sub "https://${CognitoAuthUserPoolDomain}.auth.${AWS::Region}.amazoncognito.com/login?client_id=${CognitoAuthUserPoolClient}&response_type=code&scope=email+openid+profile&redirect_uri=${CognitoAuthClientCallbackUrl}"
+
+  NextjsToDynamoDbAccessKeyId:
+    Description: Nextjs to DynamoDB access key id
+    Value: !Ref NextjsToDynamoDbAccessKey
+
+  NextjsToDynamoDbAccessKeySecret:
+    Description: Nextjs to DynamoDB access key secret
+    Value: !GetAtt NextjsToDynamoDbAccessKey.SecretAccessKey

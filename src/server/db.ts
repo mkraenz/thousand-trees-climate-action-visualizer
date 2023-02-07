@@ -7,11 +7,10 @@ import { env } from "../env/server.mjs";
 const client = new Dynamo({
   client: new DynamoDBClient({
     region: env.MY_AWS_REGION,
-    // TODO
-    // credentials: {
-    //   accessKeyId: env.MY_AWS_ACCESS_KEY_ID,
-    //   secretAccessKey: env.MY_AWS_SECRET_ACCESS_KEY,
-    // }
+    credentials: {
+      accessKeyId: env.MY_AWS_ACCESS_KEY_ID,
+      secretAccessKey: env.MY_AWS_ACCESS_KEY_SECRET,
+    },
   }),
 });
 

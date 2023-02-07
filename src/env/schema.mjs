@@ -20,6 +20,8 @@ export const serverSchema = z.object({
   COGNITO_OAUTH_CLIENT_ID: z.string(),
   MY_AWS_DYNAMODB_TABLE: z.string(),
   MY_AWS_REGION: z.string().default("us-east-1"),
+  MY_AWS_ACCESS_KEY_ID: z.string(),
+  MY_AWS_ACCESS_KEY_SECRET: z.string(),
 });
 
 /**
@@ -36,6 +38,8 @@ export const serverEnv = {
   COGNITO_OAUTH_CLIENT_ID: process.env.COGNITO_OAUTH_CLIENT_ID,
   MY_AWS_DYNAMODB_TABLE: process.env.MY_AWS_DYNAMODB_TABLE,
   MY_AWS_REGION: process.env.MY_AWS_REGION,
+  MY_AWS_ACCESS_KEY_ID: process.env.MY_AWS_ACCESS_KEY_ID,
+  MY_AWS_ACCESS_KEY_SECRET: process.env.MY_AWS_ACCESS_KEY_SECRET,
 };
 
 /**
