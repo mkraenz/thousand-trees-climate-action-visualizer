@@ -136,7 +136,7 @@ Outputs:
   NextjsToDynamoDbAccessKeyId:
     Description: Nextjs to DynamoDB access key id
     Value: !Ref NextjsToDynamoDbAccessKey
-
-  NextjsToDynamoDbAccessKeySecret:
-    Description: Nextjs to DynamoDB access key secret
-    Value: !GetAtt NextjsToDynamoDbAccessKey.SecretAccessKey
+#   Disabled because I don't want to show this on stream. Uncomment to use BUT HIDE SCREEN!
+# NextjsToDynamoDbAccessKeySecret:
+#   Description: Nextjs to DynamoDB access key secret
+#   Value: !GetAtt NextjsToDynamoDbAccessKey.SecretAccessKey
