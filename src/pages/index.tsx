@@ -39,7 +39,7 @@ const Home: NextPage<Props> = (props) => {
         <IndexHeader />
         <AddPlantedTrees />
         <Forest />
-        {router.query["demo"] && <AuthShowcase />}
+        <Authentication />
       </VStack>
     </AppStateProvider>
   );
@@ -47,17 +47,13 @@ const Home: NextPage<Props> = (props) => {
 
 export default Home;
 
-const AuthShowcase: React.FC = () => {
+const Authentication: React.FC = () => {
   const { data: sessionData } = useSession();
 
   return (
-    <VStack>
-      <Button
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </Button>
-    </VStack>
+    <Button onClick={sessionData ? () => void signOut() : () => void signIn()}>
+      {sessionData ? "Sign out" : "Get Started"}
+    </Button>
   );
 };
 
