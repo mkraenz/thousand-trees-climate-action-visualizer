@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { ySort } from "../../../utils/mymath";
 import type { UserEntity } from "../../db";
 import { UserDb } from "../../db";
 import { toTreeDto } from "../../dto";
@@ -42,7 +43,7 @@ export const usersRouter = createTRPCRouter({
         const latestShard = userShards[userShards.length - 1];
         if (!latestShard) throw new Error("No shard found");
 
-        // TODO sharding support
+        // TODO sharding support and ysort of trees
         await UserDb.update(
           {
             id: userId,
@@ -101,9 +102,9 @@ export const usersRouter = createTRPCRouter({
 });
 
 const userEntityToDto = (userShards: UserEntity[], userId: string) => {
-  const trees = userShards.flatMap(
-    (shard) => shard.trees?.map(toTreeDto) || []
-  );
+  const trees = userShards
+    .flatMap((shard) => shard.trees?.map(toTreeDto) || [])
+    .sort(ySort);
   return {
     id: userId,
     trees,

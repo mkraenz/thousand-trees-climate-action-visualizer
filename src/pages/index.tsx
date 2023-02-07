@@ -3,7 +3,6 @@ import type { GetServerSideProps } from "next";
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import { useRouter } from "next/router";
 import AddPlantedTrees from "../components/AddPlantedTrees";
 import Forest from "../components/Forest";
 import IndexHeader from "../components/IndexHeader";
@@ -16,8 +15,6 @@ interface Props {
   trees: Tree[];
 }
 const Home: NextPage<Props> = (props) => {
-  const router = useRouter();
-
   return (
     <AppStateProvider initialTrees={props.trees}>
       <Head>
@@ -38,8 +35,8 @@ const Home: NextPage<Props> = (props) => {
       >
         <IndexHeader />
         <AddPlantedTrees />
-        <Forest />
         <Authentication />
+        <Forest />
       </VStack>
     </AppStateProvider>
   );

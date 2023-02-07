@@ -60,7 +60,7 @@ Implementation:
 ### MVP 2 - save to the cloud
 
 - [x] User can authenticate
-- [ ] planted trees gets saved _in the cloud_ -> only the ones after the user signed up. everything before is gone
+- [x] planted trees gets saved _in the cloud_ -> only the ones after the user signed up. everything before is gone
 - [x] load from the cloud
 
 Implementation:

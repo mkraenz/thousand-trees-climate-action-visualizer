@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 import { api } from "../utils/api";
-import { range } from "../utils/mymath";
+import { range, ySort } from "../utils/mymath";
 
 export const STORAGE_KEY = "tstt:plantedTrees";
 
@@ -37,7 +37,7 @@ export const AppStateProvider: FC<{
     initialData: {
       user: {
         id: session.data?.user?.id || notAuthenticatedId,
-        trees: initialTrees,
+        trees: initialTrees.sort(ySort),
       },
     },
     enabled: session.data?.user?.id !== undefined,
@@ -66,7 +66,7 @@ export const AppStateProvider: FC<{
       x: Math.random(),
       y: Math.random(),
     }));
-    const allTrees = [...trees, ...newTrees];
+    const allTrees = [...trees, ...newTrees].sort(ySort);
     // localStorage.setItem(STORAGE_KEY, JSON.stringify(allTrees));
     upsertTreesMutation.mutate({ trees: allTrees });
     setTrees(allTrees);
