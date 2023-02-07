@@ -59,9 +59,9 @@ Implementation:
 
 ### MVP 2 - save to the cloud
 
-- User is authenticated
-- planted trees gets saved _in the cloud_
-- load from the cloud
+- [x] User can authenticate
+- [ ] planted trees gets saved _in the cloud_ -> only the ones after the user signed up. everything before is gone
+- [x] load from the cloud
 
 Implementation:
 
@@ -96,3 +96,49 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 
 - NextJS app is automatically deployed on Vercel on every push to `main`
 - AWS Resources are managed using SAM. Deploy with `sam build && sam deploy --parameter-overrides $(xargs --arg-file .sam.env)`. Make sure `.sam.env` is up to date. Look at `.sam.env.example` for an example.
+
+## AWS DynamoDB - Database
+
+### About
+
+- [Docs](https://aws.amazon.com/dynamodb/)
+- NoSQL serverless database
+- has free tier
+- supports JSON storage
+- very fast (if designed properly)
+- designing for DynamoDB can be complicated -> [Single Table Design](https://www.alexdebrie.com/posts/dynamodb-single-table/)
+- non-standard query model (no SQL)
+- max item size of 400 KB
+- How do you query stuff? Answer: You use partition key (Hash key, primary key) + sort key (range key, secondary key).
+
+## Our Model
+
+```log
+partition key: user id
+sort key: shard id (e.g. 1, 2, 3, 4, 5, ...)
+```
+
+## How to talk to DynamoDB
+
+- could use [AWS SDK](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/dynamodb-examples.html) but it's very manual and annoying
+- instead use [OneTable](https://doc.onetable.io/start/quick-tour/) (ORM for DynamoDB)
+
+## Sign Up Flow
+
+```log
+frontend
+-> cognito
+    -> sign up
+    -> confirm sign up
+    -> redirect to frontend
+-> frontend calls /api/me which returns `user: null`
+-> call POST /api/createMe with the current trees of the user, which creates the user in dynamoDB and syncs the app state
+```
+
+### Get the Cognito Auth URL for login / logout
+
+```sh
+aws cloudformation describe-stacks --stack-name thousand-trees \
+    --query 'Stacks[0].Outputs[?OutputKey==`HostedUi`].OutputValue' \
+    --output text
+```

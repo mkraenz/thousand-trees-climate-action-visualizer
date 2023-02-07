@@ -18,10 +18,38 @@ Parameters:
     Default: dev
 
 Resources:
+  Db:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub ${AWS::StackName}-${Stage}-db
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      BillingMode: PROVISIONED
+
+  ####################################
+  # Authentication
+  ####################################
   CognitoAuthUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: !Sub ${AWS::StackName}-${Stage}-user-pool
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_CODE
+        EmailMessage: "Your verification code is {####}"
+        EmailSubject: "Thousand Trees: Your verification code"
 
   CognitoAuthUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -62,6 +90,10 @@ Resources:
       UserPoolId: !Ref CognitoAuthUserPool
 
 Outputs:
+  DbTableName:
+    Description: DynamoDB table name
+    Value: !Ref Db
+
   CognitoAuthIssuerUrl:
     Description: Cognito Auth Issuer URL
     Value: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoAuthUserPool}
