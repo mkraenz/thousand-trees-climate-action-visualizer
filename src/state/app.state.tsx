@@ -2,13 +2,15 @@ import { useSession } from "next-auth/react";
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 import { api } from "../utils/api";
-import { range, ySort } from "../utils/mymath";
+import { randomInt, range, ySort } from "../utils/mymath";
 
+const MAX_IMAGE_ID = 13;
 export const STORAGE_KEY = "tstt:plantedTrees";
 
 export interface Tree {
   x: number;
   y: number;
+  imageId: number;
 }
 
 export type AppContext = {
@@ -63,8 +65,9 @@ export const AppStateProvider: FC<{
 
   const addTrees = (newlyPlantedTrees: number) => {
     const newTrees: Tree[] = range(newlyPlantedTrees).map((_) => ({
-      x: Math.random(),
-      y: Math.random(),
+      x: Math.random() * 0.9 + 0.05, // 5% padding on each side
+      y: Math.random() * 0.9 + 0.05,
+      imageId: randomInt(MAX_IMAGE_ID + 1),
     }));
     const allTrees = [...trees, ...newTrees].sort(ySort);
     // localStorage.setItem(STORAGE_KEY, JSON.stringify(allTrees));

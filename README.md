@@ -142,3 +142,7 @@ aws cloudformation describe-stacks --stack-name thousand-trees \
     --query 'Stacks[0].Outputs[?OutputKey==`HostedUi`].OutputValue' \
     --output text
 ```
+
+## Acknowledgements
+
+Big shoutout to [Kenneys.nl](https://www.kenney.nl/assets/foliage-pack) for the free foliage assets!

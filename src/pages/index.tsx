@@ -69,7 +69,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   return {
     props: {
       trees: userShards.flatMap(
-        (shard) => shard.trees?.map((t) => ({ x: t.x, y: t.y })) || []
+        (shard) =>
+          shard.trees?.map((t) => ({ x: t.x, y: t.y, imageId: t.imageId })) ||
+          []
       ),
     },
   };

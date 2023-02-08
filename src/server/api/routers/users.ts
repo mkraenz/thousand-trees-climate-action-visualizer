@@ -4,13 +4,15 @@ import { ySort } from "../../../utils/mymath";
 import type { UserEntity } from "../../db";
 import { UserDb } from "../../db";
 import { toTreeDto } from "../../dto";
-
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+
+const MAX_IMAGE_ID = 13;
 
 const TreeValidator = z.array(
   z.object({
     x: z.number().min(0).max(1),
     y: z.number().min(0).max(1),
+    imageId: z.number().min(0).max(MAX_IMAGE_ID),
   })
 );
 

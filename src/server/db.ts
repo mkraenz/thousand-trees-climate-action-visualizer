@@ -40,6 +40,7 @@ const MySchema = {
           schema: {
             x: { type: Number, required: true },
             y: { type: Number, required: true },
+            imageId: { type: Number, required: true },
           },
         },
         default: [] as { x: number; y: number }[],
