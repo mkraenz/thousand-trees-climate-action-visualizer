@@ -1,3 +1,7 @@
 name: thousand-trees
-runtime: nodejs
 description: Climate Action Visualizer web app hosted on AWS
+runtime:
+  name: nodejs
+  # enable top-level awaits https://github.com/pulumi/pulumi/issues/5161#issuecomment-1261920387
+  options:
+    nodeargs: "--loader ts-node/esm --no-warnings --experimental-specifier-resolution=node"

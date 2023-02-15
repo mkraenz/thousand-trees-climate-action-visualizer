@@ -1,2 +1,7 @@
 config:
-  aws:region: eu-central-1
+  aws:region: us-east-1
+  thousand-trees:adminEmail:
+    secure: AAABAFaaXYHMhVSDBqhxJHnFtjOwxtheG1yWiWpdvubw1013GLaa7IVqKq9HirPiOu+OA1ufJu/rPwg=
+  thousand-trees:adminUserSub: 0eb1d1b6-8cad-4df5-8864-8f2d0be3d72d
+  thousand-trees:baseUrlLocal: http://localhost:3000
+  thousand-trees:baseUrlRemote: https://trees.kraenz.eu
