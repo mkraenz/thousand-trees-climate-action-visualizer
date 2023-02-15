@@ -1,0 +1,3 @@
+name: thousand-trees
+runtime: nodejs
+description: Climate Action Visualizer web app hosted on AWS
