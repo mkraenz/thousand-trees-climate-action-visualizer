@@ -35,6 +35,7 @@ export const AppStateProvider: FC<{
 
   const createMeMutation = api.users.createMe.useMutation(); // only called when authenticated
 
+  // TODO maybe useReducer to manage state and update the trees reducer state from the mutation result
   const meQuery = api.users.me.useQuery(undefined, {
     initialData: {
       user: {
@@ -52,6 +53,7 @@ export const AppStateProvider: FC<{
     onError: (error) => {
       const isUserNotFoundError = error.data?.httpStatus === 404;
       if (isUserNotFoundError) {
+        // TODO load trees from local storage and send them with createMeMutation
         createMeMutation.mutate(
           { trees: [] },
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -70,7 +72,7 @@ export const AppStateProvider: FC<{
       imageId: randomInt(MAX_IMAGE_ID + 1),
     }));
     const allTrees = [...trees, ...newTrees].sort(ySort);
-    // localStorage.setItem(STORAGE_KEY, JSON.stringify(allTrees));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allTrees));
     upsertTreesMutation.mutate({ trees: allTrees });
     setTrees(allTrees);
   };
