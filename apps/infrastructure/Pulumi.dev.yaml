@@ -3,5 +3,19 @@ config:
   thousand-trees:adminEmail:
     secure: AAABAFaaXYHMhVSDBqhxJHnFtjOwxtheG1yWiWpdvubw1013GLaa7IVqKq9HirPiOu+OA1ufJu/rPwg=
   thousand-trees:adminUserSub: 0eb1d1b6-8cad-4df5-8864-8f2d0be3d72d
+  thousand-trees:amplifyToGithubAccessToken:
+    secure: AAABAONA0nLUtSsKdr8nGJbLtM8WYqwdjQMdNY0cm9ivgD1yENFLfpBetUAb1cSdmglZZIxN7oksesdaoyRFnGoVJgb7Qu3c
   thousand-trees:baseUrlLocal: http://localhost:3000
   thousand-trees:baseUrlRemote: https://trees.kraenz.eu
+  thousand-trees:cognitoOauthClientId:
+    secure: AAABACdDmDQ3atFCsVUD4xbnUhfMJanz/7y7VAGUlk/l5O5KNBv1gC575PCa526uYvxVXmIAACaLlg==
+  thousand-trees:cognitoOauthClientSecret:
+    secure: AAABAOA2Lps6m4OHf69JphCGzS7X+F6hyXjw6w9tuvQz1eAmkl2mxyuEtgxN7Ud+HGMFIXNsjYeuno3KkeQdTUrPxR4oBScpXiBbKna9UGNxDVDI
+  thousand-trees:domainName: kraenz.eu
+  thousand-trees:githubRepositoryUrl: https://github.com/mkraenz/thousand-trees-climate-action-visualizer
+  thousand-trees:mysupersecret:
+    secure: AAABAEl9vvbnQIwwNCw9L5GEzKJy1lAmKtDHJR3Z3XGnaHS9oA==
+  thousand-trees:nextAuthSecret:
+    secure: AAABAIH9QeebX4N4JiuEC/2upzCqZCAUStDLJ9zQ5dwh89QBWkIC0RTy6wrWUtg0/KKQ2+hbZiuddBTTNIkKD3vfLqoN8Z6EtuKuxA==
+  thousand-trees:nextAuthUrl: https://trees.kraenz.eu
+  thousand-trees:subdomain: trees

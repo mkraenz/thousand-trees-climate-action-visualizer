@@ -1,17 +1,33 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { readFileSync } from "fs";
+import { getAmplifyServiceRole } from "./src/amplify.service-role";
+import { createIdentityProvider } from "./src/identity-provider";
+import { createNextjsAccessToDynamodb } from "./src/nextjs-access-to-dynanodb";
 
 const config = new pulumi.Config();
+const amplifyToGithubAccessToken = config.requireSecret(
+  "amplifyToGithubAccessToken"
+);
 const awsConfig = new pulumi.Config("aws");
 const region = awsConfig.require("region");
 const project = pulumi.getProject();
 const stack = pulumi.getStack();
 const baseUrlLocal = config.require("baseUrlLocal");
 const baseUrlRemote = config.require("baseUrlRemote");
+const githubRepositoryUrl = config.require("githubRepositoryUrl");
 const userpoolClientCallbackUrlRemote = `${baseUrlRemote}/api/auth/callback/cognito`;
 const adminEmail = config.require("adminEmail");
 const adminUserSub = config.require("adminUserSub");
 const awsIdentity = await aws.getCallerIdentity();
+const nextauthSecret = config.requireSecret("nextAuthSecret");
+const nextAuthUrl = config.require("nextAuthUrl");
+const cognitoOauthClientId = config.requireSecret("cognitoOauthClientId");
+const cognitoOauthClientSecret = config.requireSecret(
+  "cognitoOauthClientSecret"
+);
+const domainName = config.require("domainName");
+const subdomain = config.require("subdomain");
 
 const db = new aws.dynamodb.Table(
   "db",
@@ -43,130 +59,95 @@ const db = new aws.dynamodb.Table(
   }
 );
 
-const nextjsToDynamodbUser = new aws.iam.User(
-  "nextjs-to-dynamodb-user",
-  { name: `${project}-${stack}-nextjs-to-dynamodb-user` },
-  {
-    protect: true,
-  }
-);
+const {
+  nextjsToDynamodbAccessKey,
+  nextjsToDynamodbUser,
+  nextjsToDynamodbUserPolicy,
+} = createNextjsAccessToDynamodb({
+  awsAccountId: awsIdentity.accountId,
+  db,
+  project,
+  stack,
+  region,
+});
 
-const nextjsToDynamodbUserPolicy = new aws.iam.UserPolicy(
-  "nextjs-to-dynamodb-user-policy",
-  {
-    name: `${project}-${stack}-nextjs-to-dynamodb-policy`,
-    policy: db.name.apply((name) =>
-      JSON.stringify({
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Action: [
-              "dynamodb:Query",
-              "dynamodb:Scan",
-              "dynamodb:GetItem",
-              "dynamodb:PutItem",
-              "dynamodb:UpdateItem",
-              "dynamodb:DeleteItem",
-            ],
-            Effect: "Allow",
-            Resource: [
-              `arn:aws:dynamodb:${region}:${awsIdentity.accountId}:table/${name}`,
-            ],
-          },
-        ],
-      })
-    ),
-    user: nextjsToDynamodbUser.name,
-  },
-  {
-    protect: true,
-  }
-);
+const { userpool, userpoolDomain, userpoolClient, userpoolUser } =
+  createIdentityProvider({
+    adminEmail,
+    adminUserSub,
+    baseUrlLocal,
+    baseUrlRemote,
+    project,
+    stack,
+    awsAccountId: awsIdentity.accountId,
+    userpoolClientCallbackUrlRemote,
+  });
 
-const nextjsToDynamodbAccessKey = new aws.iam.AccessKey(
-  "nextjs-to-dynamodb-access-key",
-  { user: nextjsToDynamodbUser.name },
-  {
-    protect: true,
-  }
-);
-
-const userpool = new aws.cognito.UserPool(
-  "userpool",
-  {
-    autoVerifiedAttributes: ["email"],
-    name: `${project}-${stack}-user-pool`,
-    passwordPolicy: {
-      minimumLength: 8,
-      requireLowercase: true,
-      requireNumbers: true,
-      requireSymbols: true,
-      requireUppercase: true,
-      temporaryPasswordValidityDays: 7,
+const amplifyServiceRole = new aws.iam.Role(`${project}-amplify-svc-role`, {
+  assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({
+    Service: "amplify.amazonaws.com",
+  }),
+  inlinePolicies: [
+    {
+      // we need to provide a name or pulumi will succeed without creating the policy WAT?!
+      name: `${project}-amplify-create-logs`,
+      policy: JSON.stringify(
+        getAmplifyServiceRole(awsIdentity.accountId, region)
+      ),
     },
-    usernameAttributes: ["email"],
-    verificationMessageTemplate: {
-      emailMessage: "Your verification code is {####}",
-      emailSubject: "Thousand Trees: Your verification code",
-      defaultEmailOption: "CONFIRM_WITH_CODE",
+  ],
+});
+
+const amplifyApp = new aws.amplify.App(project, {
+  buildSpec: readFileSync("./amplify.buildSpec.yaml", "utf-8"),
+  accessToken: amplifyToGithubAccessToken,
+  platform: "WEB_COMPUTE",
+  environmentVariables: {
+    // TODO put secrets into AWS Systems Manager Parameter Store
+    NEXTAUTH_SECRET: nextauthSecret,
+    NEXTAUTH_URL: nextAuthUrl,
+    COGNITO_OAUTH_CLIENT_ID: cognitoOauthClientId,
+    COGNITO_OAUTH_CLIENT_SECRET: cognitoOauthClientSecret,
+    COGNITO_OAUTH_ISSUER_URL: pulumi.interpolate`https://cognito-idp.${region}.amazonaws.com/${userpool.id}`,
+    MY_AWS_REGION: region,
+    MY_AWS_DYNAMODB_TABLE: db.name,
+    MY_AWS_ACCESS_KEY_ID: nextjsToDynamodbAccessKey.id,
+    MY_AWS_ACCESS_KEY_SECRET: nextjsToDynamodbAccessKey.secret,
+    AMPLIFY_MONOREPO_APP_ROOT: "apps/frontend",
+  },
+  repository: githubRepositoryUrl,
+  autoBranchCreationConfig: {
+    enableAutoBuild: true,
+  },
+  autoBranchCreationPatterns: ["main"],
+  enableAutoBranchCreation: true,
+  iamServiceRoleArn: amplifyServiceRole.arn,
+});
+
+const nextAppMainBranch = new aws.amplify.Branch("main", {
+  appId: amplifyApp.id,
+  branchName: "main",
+  framework: "Next.js - SSR",
+  stage: "PRODUCTION",
+  enableAutoBuild: true,
+});
+
+new aws.amplify.DomainAssociation("domain", {
+  appId: amplifyApp.id,
+  domainName,
+  subDomains: [
+    {
+      branchName: nextAppMainBranch.branchName,
+      prefix: subdomain,
     },
-  },
-  {
-    protect: true,
-  }
-);
+  ],
+  waitForVerification: true,
+});
 
-const userpoolClient = new aws.cognito.UserPoolClient(
-  "userpool-client",
-  {
-    allowedOauthFlows: ["code"],
-    allowedOauthFlowsUserPoolClient: true,
-    allowedOauthScopes: ["openid", "profile", "email"],
-    callbackUrls: [
-      `${baseUrlLocal}/api/auth/callback/cognito`,
-      userpoolClientCallbackUrlRemote,
-    ],
-    enableTokenRevocation: true,
-    logoutUrls: [
-      `${baseUrlRemote}/api/auth/logout`,
-      `${baseUrlLocal}/api/auth/logout`,
-    ],
-    name: `${project}-${stack}-nextjs`,
-    preventUserExistenceErrors: "ENABLED",
-    supportedIdentityProviders: ["COGNITO"],
-    userPoolId: userpool.id,
-    // generateSecret: true,
-  },
-  {
-    protect: true,
-  }
-);
-
-const userpoolUser = new aws.cognito.User(
-  "userpool-user",
-  {
-    attributes: {
-      email: adminEmail,
-      sub: adminUserSub, // due to having imported an existing user
-    },
-    userPoolId: userpool.id,
-    username: adminEmail,
-  },
-  {
-    protect: true,
-  }
-);
-
-const userpoolDomain = new aws.cognito.UserPoolDomain(
-  "userpool-domain",
-  {
-    domain: `${project}-${stack}-${awsIdentity.accountId}`,
-    userPoolId: userpool.id,
-  },
-  {
-    protect: true,
-  }
-);
+export const amplifyAppId = amplifyApp.id;
+export const amplifyAppArn = amplifyApp.arn;
+export const amplifyAppDefaultDomain = amplifyApp.defaultDomain;
+export const amplifyNextAppMainBranchName = nextAppMainBranch.branchName;
 
 export const tableName = db.name;
 export const cognitoAuthIssuerUrl = pulumi.interpolate`https://cognito-idp.${region}.amazonaws.com/${userpool.id}`;
