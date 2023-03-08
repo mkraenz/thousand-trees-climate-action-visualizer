@@ -1,11 +1,11 @@
 import { useSession } from "next-auth/react";
 import type { FC, ReactNode } from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../utils/api";
 import { randomInt, range, ySort } from "../utils/mymath";
 
 const MAX_IMAGE_ID = 13;
-export const STORAGE_KEY = "tstt:plantedTrees";
+const STORAGE_KEY = "tstt:plantedTrees";
 
 export interface Tree {
   x: number;
@@ -22,7 +22,7 @@ export type AppContext = {
 const AppContext = createContext<AppContext>({
   trees: [],
   addTrees: () => undefined,
-  setTrees: () => undefined,
+  setTrees: () => undefined, // TODO do we have to expose this?
 });
 
 const notAuthenticatedId = "n/A";
@@ -60,13 +60,24 @@ export const AppStateProvider: FC<{
         createMeMutation.mutate(
           { trees: existingTrees },
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          { onSuccess: () => meQuery.refetch() }
+          {
+            onSuccess: () => meQuery.refetch(),
+          }
         );
       }
     },
   });
   const upsertTreesMutation = api.users.upsert.useMutation();
-  const [trees, setTrees] = useState<Tree[]>(meQuery.data?.user?.trees || []);
+  const [trees, setTrees] = useState<Tree[]>(meQuery.data.user.trees);
+  useEffect(() => {
+    // using initialTrees because it does not change once the page is loaded
+    if (initialTrees.length > 0) return; // we have data, so don't override it
+
+    const treesFromLocalStorage = JSON.parse(
+      localStorage.getItem(STORAGE_KEY) || "[]"
+    ) as Tree[];
+    if (treesFromLocalStorage.length > 0) setTrees(treesFromLocalStorage);
+  }, [setTrees, initialTrees]);
 
   const addTrees = (newlyPlantedTrees: number) => {
     const newTrees: Tree[] = range(newlyPlantedTrees).map((_) => ({
@@ -75,8 +86,11 @@ export const AppStateProvider: FC<{
       imageId: randomInt(MAX_IMAGE_ID + 1),
     }));
     const allTrees = [...trees, ...newTrees].sort(ySort);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(allTrees));
-    upsertTreesMutation.mutate({ trees: allTrees });
+    if (session.status === "authenticated")
+      upsertTreesMutation.mutate({
+        trees: allTrees,
+      });
+    else localStorage.setItem(STORAGE_KEY, JSON.stringify(allTrees));
     setTrees(allTrees);
   };
 
