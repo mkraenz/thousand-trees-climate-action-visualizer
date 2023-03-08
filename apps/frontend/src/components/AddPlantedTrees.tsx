@@ -14,8 +14,6 @@ import { useAppState } from "../state/app.state";
 
 interface Props {}
 
-export const STORAGE_KEY = "tstt:plantedTrees";
-
 const AddPlantedTrees: FC<Props> = (props) => {
   const [value, setValue] = useState(1);
   const {
