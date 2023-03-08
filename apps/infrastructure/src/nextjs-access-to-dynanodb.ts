@@ -16,7 +16,7 @@ export const createNextjsAccessToDynamodb = ({
   const nextjsToDynamodbUser = new aws.iam.User("nextjs-to-dynamodb-user-2");
 
   const nextjsToDynamodbUserPolicy = new aws.iam.UserPolicy(
-    "nextjs-to-dynamodb-user-policy-2",
+    "nextjs-to-dynamodb-user-policy-3",
     {
       policy: db.name.apply((name) =>
         JSON.stringify({
@@ -44,7 +44,7 @@ export const createNextjsAccessToDynamodb = ({
   );
 
   const nextjsToDynamodbAccessKey = new aws.iam.AccessKey(
-    "nextjs-to-dynamodb-access-key-2",
+    "nextjs-to-dynamodb-access-key-3",
     { user: nextjsToDynamodbUser.name, status: "Active" }
   );
   return {

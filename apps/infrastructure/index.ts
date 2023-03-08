@@ -22,10 +22,6 @@ const adminUserSub = config.require("adminUserSub");
 const awsIdentity = await aws.getCallerIdentity();
 const nextauthSecret = config.requireSecret("nextAuthSecret");
 const nextAuthUrl = config.require("nextAuthUrl");
-const cognitoOauthClientId = config.requireSecret("cognitoOauthClientId");
-const cognitoOauthClientSecret = config.requireSecret(
-  "cognitoOauthClientSecret"
-);
 const domainName = config.require("domainName");
 const subdomain = config.require("subdomain");
 
@@ -106,8 +102,8 @@ const amplifyApp = new aws.amplify.App(project, {
     // TODO put secrets into AWS Systems Manager Parameter Store
     NEXTAUTH_SECRET: nextauthSecret,
     NEXTAUTH_URL: nextAuthUrl,
-    COGNITO_OAUTH_CLIENT_ID: cognitoOauthClientId,
-    COGNITO_OAUTH_CLIENT_SECRET: cognitoOauthClientSecret,
+    COGNITO_OAUTH_CLIENT_ID: userpoolClient.id,
+    COGNITO_OAUTH_CLIENT_SECRET: userpoolClient.clientSecret,
     COGNITO_OAUTH_ISSUER_URL: pulumi.interpolate`https://cognito-idp.${region}.amazonaws.com/${userpool.id}`,
     MY_AWS_REGION: region,
     MY_AWS_DYNAMODB_TABLE: db.name,

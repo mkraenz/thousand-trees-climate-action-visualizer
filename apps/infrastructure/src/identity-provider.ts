@@ -45,7 +45,7 @@ export const createIdentityProvider = ({
   );
 
   const userpoolClient = new aws.cognito.UserPoolClient(
-    "userpool-client",
+    "userpool-client-2",
     {
       allowedOauthFlows: ["code"],
       allowedOauthFlowsUserPoolClient: true,
@@ -63,11 +63,8 @@ export const createIdentityProvider = ({
       preventUserExistenceErrors: "ENABLED",
       supportedIdentityProviders: ["COGNITO"],
       userPoolId: userpool.id,
-      // generateSecret: true,
+      generateSecret: true,
     },
-    {
-      protect: true,
-    }
   );
 
   const userpoolUser = new aws.cognito.User(
