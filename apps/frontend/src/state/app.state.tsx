@@ -53,9 +53,12 @@ export const AppStateProvider: FC<{
     onError: (error) => {
       const isUserNotFoundError = error.data?.httpStatus === 404;
       if (isUserNotFoundError) {
+        const existingTrees = JSON.parse(
+          localStorage.getItem(STORAGE_KEY) || "[]"
+        ) as Tree[];
         // TODO load trees from local storage and send them with createMeMutation
         createMeMutation.mutate(
-          { trees: [] },
+          { trees: existingTrees },
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           { onSuccess: () => meQuery.refetch() }
         );
