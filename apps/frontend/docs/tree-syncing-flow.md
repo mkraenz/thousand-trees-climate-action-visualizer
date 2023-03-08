@@ -26,12 +26,10 @@ f. user opens page for the second or later time, is not signed in, adds trees, t
 - a) on sign up
   - [x] try read trees from local storage and create user+trees in database,
 - b) on sign out
-  - [x] clear local storage
   - [ ] show empty forest
-    - need a way to know when we log out -> TODO in `handleSignOut`
 - c) not signed in, add trees
-  - render new trees
-  - write all trees to local storage
+  - [ ] render new trees
+  - [ ] write all trees to local storage
 - d) (empty local storage), signed in, add trees
   - render new trees
   - write trees to database
@@ -39,6 +37,16 @@ f. user opens page for the second or later time, is not signed in, adds trees, t
   - render trees from database (if not empty, otherwise same as `on sign up`)
   - warn the user that n trees created before sign-in have been lost
 - f) not signed in
-  - try render trees from local storage
+  - [ ] try render trees from local storage
 
 Question: What happens if we get signed out automatically? - for now, same as e) - maybe in the future, if trees from local storage and from database are identical (deep-equal), then no need to warn the user
+
+### Invariant
+
+when signed in, local storage does not matter at all (except for sign up for a few seconds)
+when signed in, local storage is never written to
+
+In general,
+signed out uses local storage
+signed in uses database (and never local storage)
+sign up writes local storage to database
