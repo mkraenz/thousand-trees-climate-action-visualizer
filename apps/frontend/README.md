@@ -135,6 +135,12 @@ frontend
 -> call POST /api/createMe with the current trees of the user, which creates the user in dynamoDB and syncs the app state
 ```
 
+## Syncing local storage to the cloud
+
+- [x] if user is signed out, use local storage
+- [x] if user is signed in, use the database (never use local storage)
+- [x] on sign-up, write local storage to the database (if local storage is valid)
+
 ### Get the Cognito Auth URL for login / logout
 
 ```sh

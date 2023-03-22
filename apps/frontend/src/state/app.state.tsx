@@ -35,7 +35,6 @@ export const AppStateProvider: FC<{
 
   const createMeMutation = api.users.createMe.useMutation(); // only called when authenticated
 
-  // TODO maybe useReducer to manage state and update the trees reducer state from the mutation result
   const meQuery = api.users.me.useQuery(undefined, {
     initialData: {
       user: {
@@ -56,12 +55,14 @@ export const AppStateProvider: FC<{
         const existingTrees = JSON.parse(
           localStorage.getItem(STORAGE_KEY) || "[]"
         ) as Tree[];
-        // TODO load trees from local storage and send them with createMeMutation
         createMeMutation.mutate(
           { trees: existingTrees },
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           {
-            onSuccess: () => meQuery.refetch(),
+            onSuccess: async () => {
+              await meQuery.refetch();
+              // clear local storage on successful signup and sync
+              localStorage.removeItem(STORAGE_KEY);
+            },
           }
         );
       }
