@@ -9,6 +9,11 @@ applications:
             - npm ci
         build:
           commands:
+            - yum install jq -y
+            # writing NEXTAUTH_SECRET etc from parameter store secrets (available as json inside of $secrets env var) to env vars so that we can `env | grep ..` them down below
+            - export NEXTAUTH_SECRET=$(echo $secrets | jq -r .NEXTAUTH_SECRET)
+            - export COGNITO_OAUTH_CLIENT_SECRET=$(echo $secrets | jq -r .COGNITO_OAUTH_CLIENT_SECRET)
+            - export MY_AWS_ACCESS_KEY_SECRET=$(echo $secrets | jq -r .MY_AWS_ACCESS_KEY_SECRET)
             - env | grep -e NEXTAUTH_URL -e NEXTAUTH_SECRET -e COGNITO_OAUTH_CLIENT_ID -e COGNITO_OAUTH_CLIENT_SECRET -e COGNITO_OAUTH_ISSUER_URL -e MY_AWS_DYNAMODB_TABLE -e MY_AWS_DYNAMODB_TABLE_NAME -e MY_AWS_REGION -e MY_AWS_ACCESS_KEY_ID -e MY_AWS_ACCESS_KEY_SECRET >> .env.production
             - npm run build
       artifacts:

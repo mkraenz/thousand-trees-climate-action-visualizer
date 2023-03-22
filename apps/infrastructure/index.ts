@@ -20,10 +20,16 @@ const userpoolClientCallbackUrlRemote = `${baseUrlRemote}/api/auth/callback/cogn
 const adminEmail = config.require("adminEmail");
 const adminUserSub = config.require("adminUserSub");
 const awsIdentity = await aws.getCallerIdentity();
+// TODO move secrets from config to a separate (private) repository
 const nextauthSecret = config.requireSecret("nextAuthSecret");
 const nextAuthUrl = config.require("nextAuthUrl");
 const domainName = config.require("domainName");
 const subdomain = config.require("subdomain");
+
+const tags = {
+  managedBy: "pulumi",
+  project,
+};
 
 const db = new aws.dynamodb.Table(
   "db",
@@ -91,6 +97,26 @@ const amplifyServiceRole = new aws.iam.Role(`${project}-amplify-svc-role`, {
         getAmplifyServiceRole(awsIdentity.accountId, region)
       ),
     },
+    {
+      name: `${project}-amplify-access-to-parameter-store`,
+      policy: JSON.stringify({
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Sid: "",
+            Effect: "Allow",
+            Action: [
+              "ssm:GetParametersByPath",
+              "ssm:GetParameters",
+              "ssm:GetParameter",
+              "ssm:DescribeParameters",
+            ],
+            // TODO restrict to specific path, minimize the actions
+            Resource: "*",
+          },
+        ],
+      }),
+    },
   ],
 });
 
@@ -99,16 +125,13 @@ const amplifyApp = new aws.amplify.App(project, {
   accessToken: amplifyToGithubAccessToken,
   platform: "WEB_COMPUTE",
   environmentVariables: {
-    // TODO put secrets into AWS Systems Manager Parameter Store
-    NEXTAUTH_SECRET: nextauthSecret,
+    // NOTE: secrets are inside AWS Systems Manager Parameter Store and accessed in the buildSpec as an environment variable named $secrets
     NEXTAUTH_URL: nextAuthUrl,
     COGNITO_OAUTH_CLIENT_ID: userpoolClient.id,
-    COGNITO_OAUTH_CLIENT_SECRET: userpoolClient.clientSecret,
     COGNITO_OAUTH_ISSUER_URL: pulumi.interpolate`https://cognito-idp.${region}.amazonaws.com/${userpool.id}`,
     MY_AWS_REGION: region,
     MY_AWS_DYNAMODB_TABLE: db.name,
     MY_AWS_ACCESS_KEY_ID: nextjsToDynamodbAccessKey.id,
-    MY_AWS_ACCESS_KEY_SECRET: nextjsToDynamodbAccessKey.secret,
     AMPLIFY_MONOREPO_APP_ROOT: "apps/frontend",
   },
   repository: githubRepositoryUrl,
@@ -138,6 +161,28 @@ new aws.amplify.DomainAssociation("domain", {
     },
   ],
   waitForVerification: true,
+});
+
+const getParameterName = (suffix: string) =>
+  pulumi.interpolate`/amplify/${amplifyApp.id}/${nextAppMainBranch.branchName}/${suffix}`;
+
+new aws.ssm.Parameter("nextauth-secret", {
+  type: "SecureString",
+  name: getParameterName("NEXTAUTH_SECRET"),
+  value: nextauthSecret,
+  tags,
+});
+new aws.ssm.Parameter("cognito-oauth-client-secret", {
+  type: "SecureString",
+  name: getParameterName("COGNITO_OAUTH_CLIENT_SECRET"),
+  value: userpoolClient.clientSecret,
+  tags,
+});
+new aws.ssm.Parameter("aws-access-key-secret", {
+  type: "SecureString",
+  name: getParameterName("MY_AWS_ACCESS_KEY_SECRET"),
+  value: nextjsToDynamodbAccessKey.secret,
+  tags,
 });
 
 export const amplifyAppId = amplifyApp.id;
