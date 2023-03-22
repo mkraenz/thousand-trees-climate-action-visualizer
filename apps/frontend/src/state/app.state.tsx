@@ -16,13 +16,11 @@ export interface Tree {
 export type AppContext = {
   trees: Tree[];
   addTrees: (newlyPlantedTrees: number) => void;
-  setTrees: (trees: Tree[]) => void;
 };
 
 const AppContext = createContext<AppContext>({
   trees: [],
   addTrees: () => undefined,
-  setTrees: () => undefined, // TODO do we have to expose this?
 });
 
 const notAuthenticatedId = "n/A";
@@ -96,7 +94,7 @@ export const AppStateProvider: FC<{
   };
 
   return (
-    <AppContext.Provider value={{ trees, addTrees, setTrees }}>
+    <AppContext.Provider value={{ trees, addTrees }}>
       {children}
     </AppContext.Provider>
   );
@@ -107,6 +105,5 @@ export const useAppState = () => {
   return {
     trees: value.trees,
     addTrees: value.addTrees,
-    setTrees: value.setTrees,
   };
 };
