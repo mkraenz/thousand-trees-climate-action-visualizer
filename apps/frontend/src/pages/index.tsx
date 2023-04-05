@@ -2,6 +2,8 @@ import { Button, VStack } from "@chakra-ui/react";
 import type { GetServerSideProps } from "next";
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Head from "next/head";
 import AddPlantedTrees from "../components/AddPlantedTrees";
 import Forest from "../components/Forest";
@@ -14,7 +16,9 @@ import { AppStateProvider } from "../state/app.state";
 interface Props {
   trees: Tree[];
 }
+
 const Home: NextPage<Props> = (props) => {
+  const { t } = useTranslation();
   return (
     <AppStateProvider initialTrees={props.trees}>
       <Head>
@@ -34,6 +38,7 @@ const Home: NextPage<Props> = (props) => {
         gap={8}
       >
         <IndexHeader />
+        {/* <p>{t("common:helloWorld")}</p> */}
         <AddPlantedTrees />
         <Authentication />
         <Forest />
@@ -57,6 +62,7 @@ const Authentication: React.FC = () => {
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const defaultResponse = {
     props: {
+      ...(await serverSideTranslations(ctx.locale!, ["common"])),
       trees: [],
     },
   };
@@ -68,6 +74,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   userShards.sort((a, b) => a.shardId - b.shardId);
   return {
     props: {
+      ...defaultResponse.props,
       trees: userShards.flatMap(
         (shard) =>
           shard.trees?.map((t) => ({ x: t.x, y: t.y, imageId: t.imageId })) ||

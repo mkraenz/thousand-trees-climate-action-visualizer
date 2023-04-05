@@ -1,4 +1,7 @@
 // @ts-check
+
+import i18nConfig from "./next-i18next.config.js";
+
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
  * This is especially useful for Docker builds.
@@ -9,9 +12,6 @@
 const config = {
   reactStrictMode: true,
   swcMinify: true,
-  i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
-  },
+  i18n: i18nConfig.i18n,
 };
 export default config;
