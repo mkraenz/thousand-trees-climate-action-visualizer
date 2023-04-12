@@ -4,7 +4,7 @@
  * @type {import('next-i18next').UserConfig}
  */
 module.exports = {
-  debug: true,
+  debug: false,
   strictMode: true,
   i18n: {
     defaultLocale: "en",
