@@ -22,10 +22,10 @@ const Home: NextPage<Props> = (props) => {
   return (
     <AppStateProvider initialTrees={props.trees}>
       <Head>
-        <title>Thousand Trees - Climate Action Visualizer</title>
+        <title>{t("indexPageTitle")}</title>
         <meta
           name="description"
-          content="Grow your virtual forest to track the trees you've planted."
+          content={t("indexMetaDescription") ?? undefined}
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -38,7 +38,6 @@ const Home: NextPage<Props> = (props) => {
         gap={8}
       >
         <IndexHeader />
-        {/* <p>{t("common:helloWorld")}</p> */}
         <AddPlantedTrees />
         <Authentication />
         <Forest />
@@ -51,10 +50,11 @@ export default Home;
 
 const Authentication: React.FC = () => {
   const { data: sessionData } = useSession();
+  const { t } = useTranslation();
 
   return (
     <Button onClick={sessionData ? () => void signOut() : () => void signIn()}>
-      {sessionData ? "Sign out" : "Get Started"}
+      {sessionData ? t("signOut") : t("signIn")}
     </Button>
   );
 };

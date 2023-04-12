@@ -1,3 +1,13 @@
 {
-  "helloWorld": "Hello World"
+  "appName": "Thousand Trees",
+  "mission": "Revert your Life Time Carbon Footprint to rescue our Planet",
+  "indexPageTitle": "Thousand Trees - Climate Action Visualizer",
+  "indexMetaDescription": "Grow your virtual forest to track the trees you've planted.",
+  "addTrees": "Add trees to your forest",
+  "plantTreesButton": "Add",
+  "emptyForest": "Plant trees and your forest will show up here.",
+  "forest": "You have planted one tree so far. Your forest is growing!",
+  "forest_other": "You have planted {{count}} trees so far. Your forest is growing!",
+  "signIn": "Sign in",
+  "signOut": "Sign out"
 }

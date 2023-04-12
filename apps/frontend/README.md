@@ -152,3 +152,25 @@ aws cloudformation describe-stacks --stack-name thousand-trees \
 ## Acknowledgements
 
 Big shoutout to [Kenneys.nl](https://www.kenney.nl/assets/foliage-pack) for the free foliage assets!
+
+## Development
+
+### Internationalization and Localization
+
+i18n = internationalization
+l10n = localization
+
+What i18n encompasses in the extreme case (we are only concerned with a subset of this list in this project):
+
+- translate strings
+  - i18next, react-i18next, next-i18next
+  - accessibility strings
+- date formats, number formats, telephone numbers, currency
+  - Intl, payment provider-specific solutions
+- Right-to-Left
+- Non-alphabetical languages
+- i18n/l10n for backend
+  - transactional emails
+  - privacy policies -> several different links to different versions
+- icons, emojis
+- page titles, meta tags

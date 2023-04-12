@@ -8,6 +8,7 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
+import { useTranslation } from "next-i18next";
 import type { FC } from "react";
 import { useState } from "react";
 import { useAppState } from "../state/app.state";
@@ -31,6 +32,8 @@ const AddPlantedTrees: FC<Props> = (props) => {
     },
   });
   const { addTrees } = useAppState();
+  const { t } = useTranslation();
+
   const plantTrees = () => {
     // TODO hitting backspace causes the UI to show NaN (but it still has value 1)
     addTrees(valueAsNumber);
@@ -44,7 +47,7 @@ const AddPlantedTrees: FC<Props> = (props) => {
   return (
     <VStack minW={"full"}>
       <Heading as="h3" size="md" textAlign={"center"}>
-        Add trees to your forest
+        {t("addTrees")}
       </Heading>
       <Wrap gap={8} align="center" justify={"center"}>
         <WrapItem>
@@ -62,7 +65,7 @@ const AddPlantedTrees: FC<Props> = (props) => {
         </WrapItem>
         <WrapItem>
           <Button pl={10} pr={10} minW={32} maxW={32} onClick={plantTrees}>
-            Add
+            {t("plantTreesButton")}
           </Button>
         </WrapItem>
       </Wrap>

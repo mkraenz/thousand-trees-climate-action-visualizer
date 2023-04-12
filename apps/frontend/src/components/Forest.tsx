@@ -1,6 +1,7 @@
 import { chakra, Heading, Text, WrapItem } from "@chakra-ui/react";
 import { faTree } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTranslation } from "next-i18next";
 import dynamic from "next/dynamic";
 import type { FC } from "react";
 import { useAppState } from "../state/app.state";
@@ -23,15 +24,14 @@ const NoSSRForest = dynamic(() => import("./CanvasForest"), {
 
 const Forest: FC<Props> = (props) => {
   const { trees } = useAppState();
+  const { t } = useTranslation();
 
   if (trees.length === 0) {
-    return <Text>Plant trees and your forest will show up here.</Text>;
+    return <Text>{t("emptyForest")}</Text>;
   }
   return (
     <>
-      <Heading>
-        You&apos;ve planted {trees.length} trees so far. Your forest is growing!
-      </Heading>
+      <Heading>{t("forest", { count: trees.length })}</Heading>
       <NoSSRForest />
     </>
   );

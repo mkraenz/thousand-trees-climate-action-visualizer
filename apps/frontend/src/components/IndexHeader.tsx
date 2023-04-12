@@ -1,13 +1,15 @@
 import { Heading, VStack } from "@chakra-ui/react";
+import { useTranslation } from "next-i18next";
 import type { FC } from "react";
 
 interface Props {}
 
 const IndexHeader: FC<Props> = (props) => {
+  const { t } = useTranslation();
   return (
     <VStack as="header" gap={8}>
       <Heading as="h1" size="4xl" textAlign={"center"}>
-        Thousand Trees
+        {t("appName")}
       </Heading>
       <Heading
         as="h2"
@@ -15,7 +17,7 @@ const IndexHeader: FC<Props> = (props) => {
         textTransform="capitalize"
         textAlign={"center"}
       >
-        Revert your Life Time Carbon Footprint to rescue our Planet
+        {t("mission")}
       </Heading>
     </VStack>
   );
