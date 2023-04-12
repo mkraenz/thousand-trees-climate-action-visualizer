@@ -1,13 +1,13 @@
 {
-  "appName": "Tausend Bäume",
-  "mission": "Gleiche deinen lebenslangen Klimafußabdruck aus, um unseren Planeten zu retten",
-  "indexPageTitle": "Tausend Bäume - Klimaschutzvisualisierung",
-  "indexMetaDescription": "Lasse deinen virtuellen Wald wachsen, um die Bäume, die du gepflanzt hast, zu zählen.",
-  "addTrees": "Pflanze Bäume in deinem Wald",
-  "plantTreesButton": "Hinzufügen",
-  "emptyForest": "Pflanze Bäume und dein Wald wird hier angezeigt werden.",
-  "forest": "Du hast einen Baum gepflanzt. Dein Wald wächst!",
-  "forest_other": "Du hast {{count}} Bäume gepflanzt. Dein Wald wächst!",
-  "signIn": "Einloggen",
-  "signOut": "Ausloggen"
+    "addTrees": "Pflanze Bäume in deinem Wald",
+    "appName": "Tausend Bäume",
+    "emptyForest": "Pflanze Bäume und dein Wald wird hier angezeigt werden.",
+    "forest": "Du hast einen Baum gepflanzt. Dein Wald wächst!",
+    "forest_other": "Du hast {{count}} Bäume gepflanzt. Dein Wald wächst!",
+    "indexMetaDescription": "Lasse deinen virtuellen Wald wachsen, um die Bäume, die du gepflanzt hast, zu zählen.",
+    "indexPageTitle": "Tausend Bäume - Klimaschutzvisualisierung",
+    "mission": "Gleiche deinen lebenslangen Klimafußabdruck aus, um unseren Planeten zu retten",
+    "plantTreesButton": "Hinzufügen",
+    "signIn": "Einloggen",
+    "signOut": "Ausloggen"
 }

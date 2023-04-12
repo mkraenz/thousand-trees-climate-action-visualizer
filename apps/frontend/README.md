@@ -174,3 +174,27 @@ What i18n encompasses in the extreme case (we are only concerned with a subset o
   - privacy policies -> several different links to different versions
 - icons, emojis
 - page titles, meta tags
+
+#### Lokalise
+
+Upload the common.json file to lokalise:
+
+```sh
+lokalise2 \
+    --token MY_TOKEN \
+    --project-id 294027006436e9a71250c4.14064017 \
+    file upload \
+    --file ./public/locales/en/common.json \
+    --lang-iso en
+```
+
+Download translation files from lokalise:
+
+```sh
+lokalise2 \
+    --token MY_TOKEN \
+    --project-id 294027006436e9a71250c4.14064017 \
+    file download \
+    --format json \
+    --unzip-to ./public/locales
+```
