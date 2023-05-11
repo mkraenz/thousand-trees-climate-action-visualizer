@@ -6,7 +6,9 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "i18n:upload": "./scripts/i18n/upload-en.sh",
+    "i18n:download": "./scripts/i18n/download-all.sh"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.257.0",

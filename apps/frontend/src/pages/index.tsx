@@ -62,7 +62,7 @@ const Authentication: React.FC = () => {
 export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const defaultResponse = {
     props: {
-      ...(await serverSideTranslations(ctx.locale!, ["common"])),
+      ...(await serverSideTranslations(ctx.locale || "en", ["common"])),
       trees: [],
     },
   };

@@ -179,22 +179,17 @@ What i18n encompasses in the extreme case (we are only concerned with a subset o
 
 Upload the common.json file to lokalise:
 
+[Docs](https://github.com/lokalise/lokalise-cli-2-go/blob/master/docs/lokalise2_file_upload.md)
+
 ```sh
-lokalise2 \
-    --token MY_TOKEN \
-    --project-id 294027006436e9a71250c4.14064017 \
-    file upload \
-    --file ./public/locales/en/common.json \
-    --lang-iso en
+export MY_LOKALISE_WRITE_TOKEN=...
+export NAMESPACE=common
+yarn i18n:upload
 ```
 
 Download translation files from lokalise:
 
 ```sh
-lokalise2 \
-    --token MY_TOKEN \
-    --project-id 294027006436e9a71250c4.14064017 \
-    file download \
-    --format json \
-    --unzip-to ./public/locales
+export MY_LOKALISE_READ_TOKEN=...
+yarn i18n:download
 ```

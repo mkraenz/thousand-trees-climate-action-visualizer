@@ -2,7 +2,7 @@
     "addTrees": "Pflanze Bäume in deinem Wald",
     "appName": "Tausend Bäume",
     "emptyForest": "Pflanze Bäume und dein Wald wird hier angezeigt werden.",
-    "forest": "Du hast einen Baum gepflanzt. Dein Wald wächst!",
+    "forest_one": "Du hast einen Baum gepflanzt. Dein Wald wächst!",
     "forest_other": "Du hast {{count}} Bäume gepflanzt. Dein Wald wächst!",
     "indexMetaDescription": "Lasse deinen virtuellen Wald wachsen, um die Bäume, die du gepflanzt hast, zu zählen.",
     "indexPageTitle": "Tausend Bäume - Klimaschutzvisualisierung",
