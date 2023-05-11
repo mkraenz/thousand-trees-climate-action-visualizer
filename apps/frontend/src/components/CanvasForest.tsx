@@ -7,7 +7,16 @@ import { useAppState } from "../state/app.state";
 
 interface Props {}
 
-const Tree: FC<ITree> = ({ x, y, imageId }) => {
+function easeInExpo(x: number): number {
+  return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
+}
+
+const Tree: FC<ITree & { originalY: number }> = ({
+  x,
+  y,
+  imageId,
+  originalY,
+}) => {
   const [image] = useImage(
     `/defaultsize-kenney-foliagepack/foliagePack_${imageId}.png`
   );
@@ -16,8 +25,16 @@ const Tree: FC<ITree> = ({ x, y, imageId }) => {
     md: 0.3,
   });
   if (!scale) return null;
+  console.log(originalY);
+  const scaleFactor = 0.69 + 2.4 * easeInExpo(originalY) + originalY ** 2 * 0.1;
+  // const scaleFactor = easeInExpo(originalY) * 5 + originalY * 0.5; // other idea
   return (
-    <KonvaImage image={image} x={x} y={y} scale={{ x: scale, y: scale }} />
+    <KonvaImage
+      image={image}
+      x={x}
+      y={y}
+      scale={{ x: scale * scaleFactor, y: scale * scaleFactor }}
+    />
   );
 };
 
@@ -40,6 +57,7 @@ const CanvasForest: FC<Props> = (props) => {
             imageId={tree.imageId}
             x={tree.x * width}
             y={tree.y * height}
+            originalY={tree.y}
           />
         ))}
       </Layer>
